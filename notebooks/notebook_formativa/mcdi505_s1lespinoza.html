@@ -7803,9 +7803,9 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="01-MCDI505-%E2%80%94-An%C3%A1lisis-de-series-de-tiempo">01 MCDI505 — Análisis de series de tiempo<a class="anchor-link" href="#01-MCDI505-%E2%80%94-An%C3%A1lisis-de-series-de-tiempo">¶</a></h1><h2 id="Consumo-el%C3%A9ctrico-del-litoral">Consumo eléctrico del litoral<a class="anchor-link" href="#Consumo-el%C3%A9ctrico-del-litoral">¶</a></h2><p><strong>Integrantes:</strong> Luis Rodrigo Espinoza<br/>
-<strong>Docente:</strong> Dr. Harvey Jezlid Rosas Quintero
-<strong>Datos:</strong> <code>../data/raw/consumo_electrico_litoral.csv</code><br/>
-<strong>Figuras:</strong> <code>../results/figures/</code><br/>
+<strong>Docente:</strong> Dr. Harvey Jezlid Rosas Quintero<br/>
+<strong>Datos:</strong> <code>data/raw/consumo_electrico_litoral.csv</code> (desde la raíz del proyecto)<br/>
+<strong>Figuras:</strong> <code>results/figures/</code> (desde la raíz del proyecto)<br/>
 <strong>Fecha:</strong> 02 de octubre de 2026</p>
 </div>
 </div>
@@ -7840,7 +7840,7 @@ Descripción del dataset. Se utiliza el conjunto de datos consumo_electrico_lito
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -7850,15 +7850,27 @@ Descripción del dataset. Se utiliza el conjunto de datos consumo_electrico_lito
 <span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.seasonal</span><span class="w"> </span><span class="kn">import</span> <span class="n">seasonal_decompose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span><span class="p">,</span> <span class="n">plot_pacf</span>
 
+<span class="c1"># localizar la raíz del proyecto desde el directorio de ejecución</span>
+<span class="n">project_root</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="n">path</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="o">*</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">"data/raw/consumo_electrico_litoral.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+    <span class="p">),</span>
+    <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">if</span> <span class="n">project_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">"No se encontró data/raw/consumo_electrico_litoral.csv"</span><span class="p">)</span>
 
-<span class="c1"># carpeta de salida para las figuras</span>
-<span class="n">figures_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"../results/figures"</span><span class="p">)</span>
+<span class="c1"># crear la carpeta de salida para las figuras</span>
+<span class="n">figures_dir</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">"results"</span> <span class="o">/</span> <span class="s2">"figures"</span>
 <span class="n">figures_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># leer el archivo CSV y parsear la columna de fechas</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"../data/raw/consumo_electrico_litoral.csv"</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s1">'fecha'</span><span class="p">])</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">"data"</span> <span class="o">/</span> <span class="s2">"raw"</span> <span class="o">/</span> <span class="s2">"consumo_electrico_litoral.csv"</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">"fecha"</span><span class="p">])</span>
 <span class="c1"># establecer la columna de fechas como índice y cambiar la frecuencia a mensual</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'fecha'</span><span class="p">)</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s1">'MS'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"fecha"</span><span class="p">)</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s2">"MS"</span><span class="p">)</span>
 <span class="c1"># mostrar las primeras filas del DataFrame</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
@@ -7871,7 +7883,7 @@ Descripción del dataset. Se utiliza el conjunto de datos consumo_electrico_lito
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[19]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <div>
 <style scoped="">
